@@ -1,6 +1,6 @@
-import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import styled from 'styled-components';
+import React from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 
 // This example shows how to render two different screens
 // (or the same screen in a different context) at the same url,
@@ -28,19 +28,19 @@ class ModalSwitch extends React.Component {
 
   componentDidUpdate(prevProps) {
     let { location } = this.props;
-    console.log(prevProps.history.action)
-  // set previousLocation if props.location is not modal
-  if (
-    prevProps.history.action !== "POP" &&
-    (!location.state || !location.state.modal)
+    console.log(prevProps.history.action);
+    // set previousLocation if props.location is not modal
+    if (
+      prevProps.history.action !== 'POP' &&
+      (!location.state || !location.state.modal)
     ) {
       this.previousLocation = this.props.location;
     }
   }
-  
+
   render() {
-    console.log("prevLocation", this.previousLocation);
-    console.log("curLocation", this.props.location);
+    console.log('prevLocation', this.previousLocation);
+    console.log('curLocation', this.props.location);
     let { location } = this.props;
 
     let isModal = !!(
@@ -49,7 +49,7 @@ class ModalSwitch extends React.Component {
       this.previousLocation !== location
     ); // not initial render
 
-    console.log("Is modal: ", isModal);
+    console.log('Is modal: ', isModal);
     return (
       <div>
         {/* A location object in <Switch> is used for matching children elements instead 
@@ -73,28 +73,36 @@ class ModalSwitch extends React.Component {
 }
 
 const Image = styled.div`
-  width: 400px;
-  height: 400px;
+  width: 305px;
+  height: 305px;
   /* destructure index from props */
-  background: url(/img/${({index}) => index}.jpeg) no-repeat center/150%;
-`
+  background: url(/img/${({ index }) => index}.jpeg) no-repeat center/150%;
+
+  /* Don't add hover effect to images with props set to inModal  */
+  ${({ inModal }) =>
+    !inModal && css`
+      &:hover {
+        opacity: 0.7;
+      }
+    `}
+`;
 
 const IMAGES = [
-  { id: 1, title: "Blueberry" },
-  { id: 2, title: "House" },
-  { id: 3, title: "Girl"},
-  { id: 4, title: "Bull" },
-  { id: 5, title: "Palm"},
-  { id: 6, title: "Cat"},
-  { id: 7, title: "Camera" },
-  { id: 8, title: "Compass" },
-  { id: 9, title: "Fire" },
-  { id: 10, title: "Wave" }  ,
-  { id: 11, title: "Coffee" },
-  { id: 12, title: "Stick Man" },
-  { id: 13, title: "Mountain" },
-  { id: 14, title: "Succulent" },
-  { id: 15, title: "Barn" }
+  { id: 1, title: 'Blueberry' },
+  { id: 2, title: 'House' },
+  { id: 3, title: 'Girl' },
+  { id: 4, title: 'Bull' },
+  { id: 5, title: 'Palm' },
+  { id: 6, title: 'Cat' },
+  { id: 7, title: 'Camera' },
+  { id: 8, title: 'Compass' },
+  { id: 9, title: 'Fire' },
+  { id: 10, title: 'Wave' },
+  { id: 11, title: 'Coffee' },
+  { id: 12, title: 'Stick Man' },
+  { id: 13, title: 'Mountain' },
+  { id: 14, title: 'Succulent' },
+  { id: 15, title: 'Barn' }
 ];
 
 function Home() {
@@ -114,9 +122,20 @@ function Home() {
   );
 }
 
+const PhotoGrid = styled.div.attrs({
+  className: 'photogrid'
+})`
+  display: grid;
+  grid-template-columns: repeat(3, 305px);
+  gap: 20px;
+  width: 950px;
+  margin: auto;
+  margin-top: 80px;
+`;
+
 function Gallery() {
   return (
-    <div>
+    <PhotoGrid>
       {IMAGES.map(image => (
         <Link
           key={image.id}
@@ -127,15 +146,14 @@ function Gallery() {
           }}
         >
           <Image index={image.id} />
-          <p>{image.title}</p>
         </Link>
       ))}
-    </div>
+    </PhotoGrid>
   );
 }
 
 function ImageView({ match }) {
-  let image = IMAGES[parseInt(match.params.id, 10) -1];
+  let image = IMAGES[parseInt(match.params.id, 10) - 1];
 
   if (!image) return <div>Image not found</div>;
 
@@ -148,7 +166,7 @@ function ImageView({ match }) {
 }
 
 function Modal({ match, history }) {
-  let image = IMAGES[parseInt(match.params.id, 10) -1];
+  let image = IMAGES[parseInt(match.params.id, 10) - 1];
 
   if (!image) return null;
 
@@ -161,28 +179,28 @@ function Modal({ match, history }) {
     <div
       onClick={back}
       style={{
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
         bottom: 0,
         right: 0,
-        background: "rgba(0, 0, 0, 0.15)"
+        background: 'rgba(0, 0, 0, 0.15)'
       }}
     >
       <div
         className="modal"
         style={{
-          position: "absolute",
-          background: "#fff",
+          position: 'absolute',
+          background: '#fff',
           top: 25,
-          left: "10%",
-          right: "10%",
+          left: '10%',
+          right: '10%',
           padding: 15,
-          border: "2px solid #444"
+          border: '2px solid #444'
         }}
       >
         <h1>{image.title}</h1>
-        <Image index={image.id} />
+        <Image inModal index={image.id} />
         <button type="button" onClick={back}>
           Close
         </button>
