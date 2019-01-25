@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import Modal from './Modal/Modal';
+import Posts from './Posts';
+import Gallery from './Gallery/Gallery';
 
 // This example shows how to render two different screens
 // (or the same screen in a different context) at the same url,
@@ -49,7 +52,6 @@ class ModalSwitch extends React.Component {
       this.previousLocation !== location
     ); // not initial render
 
-    console.log('Is modal: ', isModal);
     return (
       <div>
         {/* A location object in <Switch> is used for matching children elements instead 
@@ -64,7 +66,7 @@ class ModalSwitch extends React.Component {
         <Switch location={isModal ? this.previousLocation : location}>
           <Route exact path="/" component={Home} />
           <Route path="/gallery" component={Gallery} />
-          <Route path="/img/:id" component={ImageView} />
+          <Route path="/img/:id" component={Modal} />
         </Switch>
         {isModal ? <Route path="/img/:id" component={Modal} /> : null}
       </div>
@@ -72,9 +74,13 @@ class ModalSwitch extends React.Component {
   }
 }
 
-const Image = styled.div`
+export const Image = styled.div`
   width: 305px;
   height: 305px;
+  @media (max-width: 990px) {
+    width: 100%;
+    background-size: cover;
+  }
   /* destructure index from props */
   background: url(/img/${({ index }) => index}.jpeg) no-repeat center/150%;
 
@@ -86,24 +92,6 @@ const Image = styled.div`
       }
     `}
 `;
-
-const IMAGES = [
-  { id: 1, title: 'Blueberry' },
-  { id: 2, title: 'House' },
-  { id: 3, title: 'Girl' },
-  { id: 4, title: 'Bull' },
-  { id: 5, title: 'Palm' },
-  { id: 6, title: 'Cat' },
-  { id: 7, title: 'Camera' },
-  { id: 8, title: 'Compass' },
-  { id: 9, title: 'Fire' },
-  { id: 10, title: 'Wave' },
-  { id: 11, title: 'Coffee' },
-  { id: 12, title: 'Stick Man' },
-  { id: 13, title: 'Mountain' },
-  { id: 14, title: 'Succulent' },
-  { id: 15, title: 'Barn' }
-];
 
 function Home() {
   return (
@@ -122,92 +110,19 @@ function Home() {
   );
 }
 
-const PhotoGrid = styled.div.attrs({
-  className: 'photogrid'
-})`
-  display: grid;
-  grid-template-columns: repeat(3, 305px);
-  gap: 20px;
-  width: 950px;
-  margin: auto;
-  margin-top: 80px;
-`;
 
-function Gallery() {
-  return (
-    <PhotoGrid>
-      {IMAGES.map(image => (
-        <Link
-          key={image.id}
-          to={{
-            pathname: `/img/${image.id}`,
-            // this is the trick!
-            state: { modal: true }
-          }}
-        >
-          <Image index={image.id} />
-        </Link>
-      ))}
-    </PhotoGrid>
-  );
-}
+// function ImageView({ match }) {
+//   let image = Posts[parseInt(match.params.id, 10) - 1];
 
-function ImageView({ match }) {
-  let image = IMAGES[parseInt(match.params.id, 10) - 1];
+//   if (!image) return <div>Image not found</div>;
 
-  if (!image) return <div>Image not found</div>;
-
-  return (
-    <div>
-      <h1>{image.title}</h1>
-      <Image index={image.id} />
-    </div>
-  );
-}
-
-function Modal({ match, history }) {
-  let image = IMAGES[parseInt(match.params.id, 10) - 1];
-
-  if (!image) return null;
-
-  let back = e => {
-    e.stopPropagation();
-    history.goBack();
-  };
-
-  return (
-    <div
-      onClick={back}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        background: 'rgba(0, 0, 0, 0.15)'
-      }}
-    >
-      <div
-        className="modal"
-        style={{
-          position: 'absolute',
-          background: '#fff',
-          top: 25,
-          left: '10%',
-          right: '10%',
-          padding: 15,
-          border: '2px solid #444'
-        }}
-      >
-        <h1>{image.title}</h1>
-        <Image inModal index={image.id} />
-        <button type="button" onClick={back}>
-          Close
-        </button>
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <h1>{image.title}</h1>
+//       <Image index={image.id} />
+//     </div>
+//   );
+// }
 
 function ModalGallery() {
   return (
