@@ -10,12 +10,11 @@ const OverFlowHidden = createGlobalStyle`
   body { overflow: hidden; }
 `;
 
-const ModalStyled = styled.div`
-  position: absolute;
+export const ModalStyled = styled.div`
+  position: relative;
+  margin: 0 auto;
   background: #fff;
   top: ${({ top }) => top}px;
-  left: 25%;
-  right: 25%;
   width: 600px;
   border: 2px solid #444;
 

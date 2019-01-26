@@ -3,15 +3,19 @@ import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import UserGrid from '../Profile/UserGrid';
 import Posts from '../Posts';
+import Header from '../Components/Header';
 
-const PhotoGrid = styled.div.attrs({
-  className: 'photogrid'
-})`
+const PhotoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 305px);
   gap: 20px;
   justify-content: center;
   grid-auto-rows: 305px;
+  @media (max-width: 990px) {
+    gap: 5px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: calc(33vw - 10px);
+  }
   ${({ cascade }) =>
     cascade &&
     css`
@@ -19,11 +23,6 @@ const PhotoGrid = styled.div.attrs({
       grid-gap: 5px;
     `}
 
-  @media (max-width: 990px) {
-    gap: 5px;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: calc(33vw - 10px);
-  }
 `;
 
 const LinkGrid = styled.div`
@@ -65,6 +64,7 @@ const Gallery = ({ match, location }) => {
   const cascade = location.search === '?type=cascade';
   return (
     <div>
+      <Header />
       <UserGrid />
       <LinkGrid>
         <TabLink selected={!cascade} to={`${match.url}`}>
@@ -77,10 +77,13 @@ const Gallery = ({ match, location }) => {
           cascade
         </TabLink>
       </LinkGrid>
-      <PhotoGrid cascade={cascade}>
+      { /* cascade={cascade ? 1 : 0} workaround to prevent error: 
+      Received `true` for a non-boolean attribute `cascade`.
+        If you want to write it to the DOM, pass a string instead */ }
+      <PhotoGrid cascade={cascade ? 1 : 0}>
         {Posts.map(image => (
           <ImageLink
-            cascade={cascade}
+            cascade={cascade ? 1 : 0}
             key={image.id}
             index={image.id}
             to={{
